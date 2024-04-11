@@ -3,6 +3,11 @@ package com.example.swagger.controller;
 import com.example.swagger.application.UserService;
 import com.example.swagger.domain.dto.request.AddUserRequest;
 import com.example.swagger.domain.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -18,6 +23,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Tag(name = "user-controller", description = "일반 사용자 서비스를 위한 컨트롤러입니다")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -42,8 +48,14 @@ public class UserController {
         return userService.findAll();
     }
 
+    @Operation(summary = "사용자 정보 조회API", description = "사용자 ID를 이용해서 사용자 상세 정보를 조회.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "ok!!"),
+            @ApiResponse(responseCode = "404", description = "user not found!!"),
+            @ApiResponse(responseCode = "500", description = "internal server error!!"),
+    })
     @GetMapping("/users/{id}")
-    public EntityModel<User> retrieveUser(@PathVariable Long id) {
+    public EntityModel<User> retrieveUser(@Parameter(description="사용자 ID", required = true, example = "1") @PathVariable Long id) {
         User user = userService.findById(id);
 
         EntityModel entityModel = EntityModel.of(user);
